@@ -1,0 +1,23 @@
+
+<div class="container">
+  <h2>{{title}}</h2>
+  <a href="/task/create_task" class="btn btn-success">Add Task</a>
+  <br /><br />
+  <table class="table">
+    <tr>
+      <th>#ID</th>
+      <th>Task Name</th>
+      <th>Action</th>
+    </tr>
+    {{#each taskList}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{this.name}}</td>
+        <td>
+            <a href="/task/edit_task/{{this.id}}" class="btn btn-info btn-sm">Edit</a>
+            <a href="/task/delete/{{this.id}}" class="btn btn-danger btn-sm">Delete</a>
+        </td>
+      </tr>
+    {{/each}}
+  </table>
+</div>

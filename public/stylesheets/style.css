@@ -1,0 +1,50 @@
+body {
+  /* padding: 50px; */
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00b7ff;
+}
+
+.head-sm {
+  font-size: inherit;
+}
+.head-lg {
+  font-weight: 800;
+}
+.head-md {
+  letter-spacing: 23px;
+}
+
+.btn-cust-head {
+  color: #f15c05;
+  background-color: transparent;
+  background-image: none;
+  border-color: #f15c05;
+  border-radius: 8px;
+  border: 1px solid;
+  margin:10px 10px;
+  padding: 10px 20px;
+}
+
+.btn-cust-head :hover {
+  background-color: #f15c05 !important;
+}
+
+.nav-link {
+  font-size: larger !important;
+  color: #f15c05 !important;
+}
+
+.footer {
+  bottom: 0px!important;
+  position: absolute!important;
+  color: #f15c1c;
+}
+
+.title{
+  font-weight: 600;
+  color: #f47f1c;
+  margin-top:10px
+}
