@@ -1,59 +1,69 @@
 var createError = require('http-errors');
-const express = require('express');
-const app = express();
+var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const cors = require('cors');
-var config = require("./config/config");
-
-//import body-parser to parser the req from client
-const bodyParser = require('body-parser');
-app.use(bodyParser.json())
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const taskRouter = require('./routes/task');
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/task', taskRouter)
-
-
-//middleware
-app.use(cors());
-
-
-//Imported mongoose pakage
+var config = require("./config/config")
 var mongoose = require("mongoose");
+var session = require("express-session");
+var bodyParser = require("body-parser")
+var passport = require("passport");
+var { allowInsecurePrototypeAccess } = require("@handlebars/allow-prototype-access")
+var handlebars = require("handlebars");
+require("./passport")(passport);
 
-//Config file 
-require("dotenv/config");
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users')(passport);
+var taskRouter = require('./routes/task');
 
 
+
+
+var app = express();
 
 // view engine setup
-
-var handlebars = require('express-handlebars').create({
-  layoutsDir: path.join(__dirname, "views/layouts"),
-  partialsDir: path.join(__dirname, "views/shared"),
+var hbs = require('express-handlebars').create({
+  partialsDir: path.join(__dirname, 'views/shared'),
+  extname: 'hbs',
   defaultLayout: 'layout',
-  extname: 'hbs'
-  
-});
-
-app.engine('hbs', handlebars.engine);
+  handlebars:allowInsecurePrototypeAccess(handlebars)
+  });
+app.engine('hbs', hbs.engine);
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, "views"));
-
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'vasujoshi',
+  saveUninitialized: false,
+  resave: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/task', taskRouter)
+
+// mongooes db setup/connection
+mongoose.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true }, (error) => {
+  if (!error) {
+    console.log("Database Connected Successfully !");
+  } else {
+    console.log("Failed to connect database.");
+  }
+})
+
 
 
 // catch 404 and forward to error handler
@@ -71,17 +81,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-// mongooes db setup/connection
-mongoose.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true }, (error) => {
-  if (!error) {
-    console.log("Database Connected Successfully !");
-  } else {
-    console.log("Failed to connect database.");
-  }
-})
-
-
 
 module.exports = app;

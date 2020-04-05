@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Task = require('../models/task');
+const Task = require('../model/task');
+var ObjectId = require("mongoose").Types.ObjectId;
 
-//Create New Task
-router.get('/create_task', async (req, res) => {
-    res.render("create_task");
-});
+
 
 //Save New Task
 router.post('/create_task', async (req, res) => {
@@ -26,31 +24,6 @@ router.post('/create_task', async (req, res) => {
     }
     catch (error) {
         res.render("create_task", { errorMessage: error });
-    }
-});
-
-//Get all tasks
-router.get('/', async (req, res) => {
-
-    try {
-        console.log("Retriving task list from database");
-        const tskList = await Task.find();
-        res.render("TaskList", { title: "List of task", taskList: tskList });
-    } catch (error) {
-        res.json({ message: error })
-
-    }
-})
-
-//Get Task by Specific id
-//Edit task
-router.get('/edit_task/:taskId', async (req, res) => {
-    try {
-        console.log("Retriving task data from database for task id:" + req.params.taskId);
-        const taskDetails = await Task.findById(req.params.taskId);
-        res.render("edit_task", { title: "Edit Task", task: taskDetails })
-    } catch (error) {
-        res.json({ message: error })
     }
 });
 
@@ -91,6 +64,4 @@ router.delete('/:taskId', async (req, res) => {
         res.json({ message: "Failed to Delete", status: 500 });
     }
 });
-
-
 module.exports = router;

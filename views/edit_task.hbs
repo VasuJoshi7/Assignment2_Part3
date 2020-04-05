@@ -1,18 +1,22 @@
+{{> header}}
 <div class="container">
   <h1 class="title">Edit Task</h1>
   <hr />
+  <div>
+    <label style="color: red;">{{errorMessage}}</label>
+  </div>
   <div class="row">
     <div class="col-md-6">
-      <form action="/task/edit_task/{{task.id}}" method="post">
-          <div class="form-group">
-              <input type="text" name="name" class="form-control" value={{task.name}} placeholder="Product Name" />
-          </div>
-          <div class="form-group">
-              <input type="text" name="description" class="form-control" value={{task.description}} placeholder="Price" />
-          </div>
-          <div class="form-group">
-              <button class="btn btn-info">Update Task</button>
-          </div>
+      <form action="/task/edit_task/{{task._id}}" method="post">
+        <div class="form-group">
+          <input type="text" name="name" class="form-control" placeholder="Product Name" value="{{task.name}}" />
+        </div>
+        <div class="form-group">
+          <input type="text" name="description" class="form-control" placeholder="Price" value="{{task.description}}" />
+        </div>
+        <div class="form-group">
+          <button class="btn btn-info">Update Task</button>
+        </div>
       </form>
     </div>
   </div>

@@ -11,7 +11,7 @@ const registerValidation = data => {
     return schema.validate(data);
 }
 
-const emailValidation = data => {
+const loginValidation = data => {
     const schema = Joi.object({
        
         email: Joi.string().required().email(),
@@ -20,5 +20,14 @@ const emailValidation = data => {
     return schema.validate(data);
 }
 
+const taskValidation = data => {
+    const schema = Joi.object({
+        name: Joi.string().required(),
+        description: Joi.string().required()
+    });
+    return schema.validate(data);
+}
+
 module.exports.registerValidation = registerValidation;
-module.exports.emailValidation = emailValidation;
+module.exports.loginValidation = loginValidation;
+module.exports.taskValidation = taskValidation;

@@ -1,23 +1,85 @@
-
+{{>header}}
 <div class="container">
   <h2>{{title}}</h2>
-  <a href="/task/create_task" class="btn btn-success">Add Task</a>
+  <a href="/create_task" class="btn btn-success btn-sm"
+    style="float: right;background: #f15c05;border-color: #f15c05;">Add Task</a>
   <br /><br />
   <table class="table">
     <tr>
-      <th>#ID</th>
+      {{!-- <th>#ID</th> --}}
       <th>Task Name</th>
+      <th>Created Date</th>
       <th>Action</th>
     </tr>
     {{#each taskList}}
-      <tr>
-        <td>{{this.id}}</td>
-        <td>{{this.name}}</td>
-        <td>
-            <a href="/task/edit_task/{{this.id}}" class="btn btn-info btn-sm">Edit</a>
-            <a href="/task/delete/{{this.id}}" class="btn btn-danger btn-sm">Delete</a>
-        </td>
-      </tr>
+    <tr>
+      {{!-- <td>{{this._id}}</td> --}}
+      <td>{{this.name}}</td>
+      <td>{{this.createdDate}}</td>
+      <td>
+        <a href="/edit_task/{{this._id}}" class="btn btn-info btn-sm">Edit</a>
+        <button onclick="DeleteTask('{{this._id}}')" class="btn btn-danger btn-sm deleteTask">Delete</button>
+      </td>
+    </tr>
     {{/each}}
   </table>
 </div>
+
+<script>
+
+  function DeleteTask(id) {
+    if (id != "") {
+      swal({
+        title: "Delete!",
+        text: "Are you sure want to delete this event?",
+        icon: "warning",
+        buttons: {
+          cancel: true,
+          confirm: true,
+        },
+      }).then(function (value) {
+        if (value) {
+          $("#Loading").show();
+          $.ajax({
+            type: 'delete',
+            url: 'http://localhost:3000/task/' + id,
+            async: false,
+            success: function (data) {
+              $("#Loading").hide();
+              console.log('Delete Called');
+              if (data.status != 200) {
+                swal({
+                  title: "Failed",
+                  text: data.message,
+                  icon: "error"
+                })
+              }
+              else {
+                swal({
+                  title: "Success!",
+                  text: data.message,
+                  icon: "success"
+                }).then(function () {
+                  location.reload(true);
+                })
+              }
+            },
+            error: function (error) {
+              $("#Loading").hide();
+              swal("Error occur while deleting event.");
+            }
+          });
+        }
+      })
+    }
+    else {
+      swal("Event not found. Please refresh page and try again.")
+    }
+
+
+  }
+
+
+
+
+</script>

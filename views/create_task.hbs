@@ -1,3 +1,4 @@
+{{> header}}
 <div class="container">
   <h1 class="title">Add Task</h1>
   <hr />
@@ -7,15 +8,15 @@
   <div class="row">
     <div class="col-md-6">
       <form action="/task/create_task" method="post">
-          <div class="form-group">
-              <input type="text" id="txtTaskName" name="name" class="form-control" placeholder="Task  Name" />
-          </div>
-          <div class="form-group">
-              <input type="text" id="txtDescription" name="description" class="form-control" placeholder="Descrption" />
-          </div>
-          <div class="form-group">
-              <button class="btn btn-info">Save Task</button>
-          </div>
+        <div class="form-group">
+          <input type="text" id="txtTaskName" name="name" class="form-control" placeholder="Task  Name" />
+        </div>
+        <div class="form-group">
+          <input type="text" id="txtDescription" name="description" class="form-control" placeholder="Descrption" />
+        </div>
+        <div class="form-group">
+          <button class="btn btn-info">Save Task</button>
+        </div>
       </form>
     </div>
   </div>
