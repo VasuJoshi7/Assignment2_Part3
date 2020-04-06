@@ -81,9 +81,7 @@ textarea {
   border: none;
 }
 
-textarea:focus, input:focus {
-  border-color: transparent !important;
-}
+
 
 input::-webkit-input-placeholder { color: #8f8fa1;}
 input:-moz-placeholder { color: #8f8fa1;}

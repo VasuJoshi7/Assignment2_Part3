@@ -4,14 +4,21 @@
             <li>
                 <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
+            {{#if user}}
             <li>
                 <a class="nav-item nav-link active" href="/task">Task List <span class="sr-only">(current)</span></a>
             </li>
+            {{/if}}
 
         </div>
         <span class="col-2 row">
+            {{#if user}}
+            <a class="nav-item nav-link" href="/logout">Logout</a>
+            {{else}}
             <a class="nav-item nav-link" href="/login">login</a>
             <a class="nav-item nav-link" href="/register">Register</a>
+            {{/if}}
+
         </span>
     </div>
 </nav>

@@ -2,33 +2,48 @@ const express = require('express');
 const router = express.Router();
 const Task = require('../model/task');
 var ObjectId = require("mongoose").Types.ObjectId;
+var isLoggedIn = require("../auth");
+var { taskValidation } = require("../validation")
+var User = require("../model/User");
 
 
 
 //Save New Task
-router.post('/create_task', async (req, res) => {
-    console.log("req body : ")
-    console.log(req.body);
-    const task = new Task({
-        name: req.body.name,
-        description: req.body.description,
-        createdBy: "1",
-        createdDate: Date.now().toString(),
-        modifiedDate: Date.now(),
-        status: "Pending"
-    });
+router.post('/create_task', isLoggedIn, async (req, res) => {
     try {
-        const savedTask = await task.save();
-        console.log("task saved sucessfully");
-        res.render("create_task", { errorMessage: "Data Saved Sucessfully." });
+
+        var { error } = taskValidation(req.body);
+        if (error != null) res.render("create_task", { user: req.user, errorMessage: error });
+
+        var userId;
+        await User.findOne({ username: req.session.passport.user.username }, function (error, doc) {
+            if (error) {
+                res.render("create_task", { user: req.user, errorMessage: error });
+            }
+            else {
+                userId = doc._id;
+                console.log(userId);
+                console.log("Saving Task");
+                const task = new Task({
+                    name: req.body.name,
+                    description: req.body.description,
+                    createdBy: userId,
+                    createdDate: Date.now().toString(),
+                    modifiedDate: Date.now(),
+                    status: "Pending"
+                });
+                task.save();
+                res.render("create_task", { user: req.user, errorMessage: "Data Saved Sucessfully." });
+            }
+        });
     }
     catch (error) {
-        res.render("create_task", { errorMessage: error });
+        res.render("create_task", { user: req.user, errorMessage: error });
     }
 });
 
 //Update Task By Specific id
-router.post('/edit_task/:taskId', async (req, res) => {
+router.post('/edit_task/:taskId', isLoggedIn, async (req, res) => {
     console.log(req.body);
     let error = "";
     try {
@@ -42,15 +57,16 @@ router.post('/edit_task/:taskId', async (req, res) => {
                 }
             })
         const taskDetails = await Task.findById(req.params.taskId);
-        res.render("edit_task", { title: "Edit Task", task: taskDetails, errorMessage: "Updated Sucessfully" })
+        res.render("edit_task", { user: req.user, title: "Edit Task", task: taskDetails, errorMessage: "Updated Sucessfully" })
     } catch (err) {
         error = err.message;
+        res.render("edit_task", { user: req.user, title: "Edit Task", task: req.body, errorMessage: error })
     }
-    res.render("edit_task", { title: "Edit Task", task: req.body, errorMessage: error })
+
 })
 
 //Delete Task By Specific id
-router.delete('/:taskId', async (req, res) => {
+router.delete('/:taskId', isLoggedIn, async (req, res) => {
     console.log(req.params.taskId);
     try {
         const taskList = await Task.deleteOne({ "_id": ObjectId(req.params.taskId) });

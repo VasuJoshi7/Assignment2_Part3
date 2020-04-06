@@ -3,19 +3,11 @@ var router = express.Router();
 var User = require("../model/User");
 var passport = require("passport")
 const Task = require('../model/task');
+var isLoggedIn = require("../auth");
 
-var isLoggedIn = function (req, res, next) {
-  if (req.isAuthenticated()) {
-    next()
-  }
-  else {
-    res.redirect('/login');
-  }
-}
 
-/* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Express', user: req.user });
 });
 
 router.get('/login', function (req, res, next) {
@@ -36,31 +28,43 @@ router.get('/task', isLoggedIn, async (req, res) => {
 
   try {
     console.log("Retriving task list from database");
-    var user = req.session.User;
-    const tskList = await Task.find().lean();
-    console.log(tskList);
-    res.render("TaskList", { title: "All Events", taskList: tskList });
+    await User.findOne({ username: req.session.passport.user.username }, (err, document) => {
+      if (err) {
+        res.render("error", { message: "Failed to load data, Please try to contact administrator" }); F
+      }
+
+      if (document) {
+        Task.find({ 'createdBy': document._id }, (err, doc) => {
+          console.log(doc);
+          res.render("TaskList", { title: "All Events", taskList: doc, user: req.user });
+        });
+      }
+      else {
+        res.render("TaskList", { title: "All Events", taskList: doc, user: req.user });
+      }
+    });
   } catch (error) {
-    res.json({ message: error })
+    console.log(error)
+    res.render("TaskList", { title: "All Events", taskList: doc, user: req.user });
 
   }
 })
 
 //Create New Task
 router.get('/create_task', isLoggedIn, async (req, res) => {
-  res.render("create_task");
+  res.render("create_task", { user: req.user });
 });
 
 //Get Task by Specific id
 //Edit task
 router.get('/edit_task/:taskId', isLoggedIn, async (req, res) => {
   try {
-    console.log("Retriving task data from database for task id:" + req.params.taskId);
     const taskDetails = await Task.findById(req.params.taskId);
-    console.log(taskDetails);
-    res.render("edit_task", { title: "Edit Task", task: taskDetails })
+    res.render("edit_task", { title: "Edit Task", task: taskDetails, user: req.user })
   } catch (error) {
-    res.json({ message: error })
+    // res.json({ message: error })
+    console.log(error)
+    res.render("edit_task", { title: "Edit Task", task: taskDetails, user: req.user })
   }
 });
 
